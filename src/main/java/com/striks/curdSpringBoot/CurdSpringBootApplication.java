@@ -9,7 +9,7 @@ public class CurdSpringBootApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CurdSpringBootApplication.class, args);
-		System.out.print("Hello World");
+		System.out.print("Spring Boot Application is running on port 8080");
 	}
 
 }
