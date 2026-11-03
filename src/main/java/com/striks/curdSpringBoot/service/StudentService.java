@@ -2,6 +2,8 @@ package com.striks.curdSpringBoot.service;
 
 import com.striks.curdSpringBoot.entity.Student;
 import com.striks.curdSpringBoot.repository.StudentRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -19,5 +21,14 @@ public class StudentService {
 
         Student studentRes = studentRepository.save(studentReq);
         return studentRes;
+    }
+
+    public Student getStudent(Long id) {
+        Student student = studentRepository.findById(id).orElse(null);
+
+//        if(student == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+        return student;
     }
 }

@@ -2,10 +2,7 @@ package com.striks.curdSpringBoot.controller;
 
 import com.striks.curdSpringBoot.entity.Student;
 import com.striks.curdSpringBoot.service.StudentService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/students")
@@ -33,8 +30,15 @@ public class StudentController {
         // return studentService.createStudent(student);
      }
 
+     // Read one
+    @GetMapping("/read/{id}")
+    public Student getStudent(@PathVariable Long id) {
+        Student student = studentService.getStudent(id);
+        return student;
+    }
+
     // Read
-    @RequestMapping("/read/{id}")
+    @GetMapping("/read")
     public void readStudent() {
     }
 
