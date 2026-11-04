@@ -4,6 +4,8 @@ import com.striks.curdSpringBoot.entity.Student;
 import com.striks.curdSpringBoot.service.StudentService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
@@ -34,21 +36,33 @@ public class StudentController {
     @GetMapping("/read/{id}")
     public Student getStudent(@PathVariable Long id) {
         Student student = studentService.getStudent(id);
+
+        if( student == null ) {
+            System.out.println("Student not found with ID: " + id);
+        }
         return student;
     }
 
-    // Read
-    @GetMapping("/read")
-    public void readStudent() {
+    // Read All
+    @GetMapping("/readAll")
+    public List<Student> readAllStudents() {
+        // Implementation for reading all students
+        if( studentService.getAllStudents().isEmpty()) {
+            // Handle empty list case
+            System.out.println("No students found in the database.");
+        }
+        return studentService.getAllStudents();
     }
 
     // Update
-    @RequestMapping("/update/{id}")
-    public void updateStudent() {
+    @PutMapping("/update/{id}")
+    public Student updateStudent(@PathVariable Long id, @RequestBody Student studentDetails) {
+        return studentService.updateStudent(id, studentDetails);
     }
 
     // Delete
-    @RequestMapping("/delete/{id}")
-    public void deleteStudent() {
+    @DeleteMapping("/delete/{id}")
+    public void deleteStudent(@PathVariable Long id) {
+        studentService.deleteStudent(id);
     }
 }
