@@ -10,11 +10,26 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private  String name;
+    private String name;
+
     private String email;
-    private  int age;
+
+    private int age;
+
+    @Column(name = "roll_no")
     private int rollNo;
+
     private String subject;
+
+    @Column(name = "is_deleted")
+    private boolean delete = false;
+
+
+    // Getters and Setters
+
+    public Long getId() {
+        return id;
+    }
 
     public String getName() {
         return name;
@@ -54,5 +69,13 @@ public class Student {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public boolean getDelete() {
+        return delete;
+    }
+
+    public void setDelete(boolean delete) {
+        this.delete = delete;
     }
 }

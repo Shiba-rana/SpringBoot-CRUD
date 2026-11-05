@@ -2,6 +2,9 @@ package com.striks.curdSpringBoot.controller;
 
 import com.striks.curdSpringBoot.entity.Student;
 import com.striks.curdSpringBoot.service.StudentService;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,59 +13,85 @@ import java.util.List;
 @RequestMapping("/api/students")
 public class StudentController {
 
-    private StudentService studentService;
+    private final StudentService studentService;
 
+    // Constructor Injection
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
 
-    // Create
+    // CREATE STUDENT
     @PostMapping("/create")
-    public Student createStudent(@RequestBody Student student) {
+    public ResponseEntity<Student> createStudent(@RequestBody Student student) {
 
-//        System.out.println("Student Email: " + student.getEmail() + "\n");
-//        System.out.println("Student Age: " + student.getAge() + "\n");
-//        System.out.println("Student Roll No: " + student.getRollNo() + "\n");
-//        System.out.println("Student Subject: " + student.getSubject() );
-
-        System.out.println("Inside StudentController.createStudent() method");
         Student createdStudent = studentService.createStudent(student);
-        return createdStudent;
 
-        // return studentService.createStudent(student);
-     }
+        return new ResponseEntity<>(createdStudent, HttpStatus.CREATED);
+    }
 
-     // Read one
+    // READ STUDENT BY ID
     @GetMapping("/read/{id}")
-    public Student getStudent(@PathVariable Long id) {
+    public ResponseEntity<Student> getStudent(@PathVariable Long id) {
+
         Student student = studentService.getStudent(id);
 
-        if( student == null ) {
-            System.out.println("Student not found with ID: " + id);
+        if (student == null) {
+            return ResponseEntity.notFound().build();
         }
-        return student;
+
+        return ResponseEntity.ok(student);
     }
 
-    // Read All
+    // READ ALL STUDENTS
     @GetMapping("/readAll")
-    public List<Student> readAllStudents() {
-        // Implementation for reading all students
-        if( studentService.getAllStudents().isEmpty()) {
-            // Handle empty list case
-            System.out.println("No students found in the database.");
-        }
-        return studentService.getAllStudents();
+    public ResponseEntity<List<Student>> readAllStudents() {
+
+        List<Student> students = studentService.getAllStudents();
+
+        return ResponseEntity.ok(students);
     }
 
-    // Update
+    // UPDATE STUDENT
     @PutMapping("/update/{id}")
-    public Student updateStudent(@PathVariable Long id, @RequestBody Student studentDetails) {
-        return studentService.updateStudent(id, studentDetails);
+    public ResponseEntity<Student> updateStudent(
+            @PathVariable Long id,
+            @RequestBody Student studentDetails) {
+
+        Student updatedStudent =
+                studentService.updateStudent(id, studentDetails);
+
+        if (updatedStudent == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(updatedStudent);
     }
 
-    // Delete
+    // PERMANENT DELETE STUDENT
     @DeleteMapping("/delete/{id}")
-    public void deleteStudent(@PathVariable Long id) {
-        studentService.deleteStudent(id);
+    public ResponseEntity<String> deleteStudent(@PathVariable Long id) {
+
+        Student deletedStudent = studentService.deleteStudent(id);
+
+        if (deletedStudent == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Student not found with ID: " + id);
+        }
+
+        return ResponseEntity.ok("Student deleted successfully.");
+    }
+
+    // SOFT DELETE STUDENT
+    @PatchMapping("/softDelete/{id}")
+    public ResponseEntity<String> softDeleteStudent(@PathVariable Long id) {
+
+        boolean isDeleted = studentService.softDeleteStudent(id);
+
+        if (!isDeleted) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Student not found with ID: " + id);
+        }
+
+        return ResponseEntity.ok("Student soft deleted successfully.");
     }
 }

@@ -2,46 +2,48 @@ package com.striks.curdSpringBoot.service;
 
 import com.striks.curdSpringBoot.entity.Student;
 import com.striks.curdSpringBoot.repository.StudentRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public class StudentService {
 
     private final StudentRepository studentRepository;
 
+    // Constructor Injection
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
 
-    public Student createStudent( Student studentReq) {
-//        return studentRepository.saveStudent(studentReq);
+    // CREATE STUDENT
+    public Student createStudent(Student studentReq) {
 
-        Student studentRes = studentRepository.save(studentReq);
-        return studentRes;
+        // New students are active by default
+        studentReq.setDelete(false);
+
+        return studentRepository.save(studentReq);
     }
 
+    // READ STUDENT BY ID
     public Student getStudent(Long id) {
 
-        // #1
-        Student studentRes = studentRepository.findById(id).orElse(null);
-        return studentRes;
-
-        // #2
-        // return studentRepository.findById(id).orElse(null);
+        return studentRepository.findById(id).orElse(null);
     }
 
+    // READ ALL ACTIVE STUDENTS
     public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+
+        return studentRepository.findByDeleteFalse();
     }
 
+    // UPDATE STUDENT
     public Student updateStudent(Long id, Student studentDetails) {
+
         Student student = studentRepository.findById(id).orElse(null);
-        if (student == null) {
+
+        if (student == null || student.getDelete()) {
             return null;
         }
 
@@ -51,15 +53,37 @@ public class StudentService {
         student.setAge(studentDetails.getAge());
         student.setRollNo(studentDetails.getRollNo());
         student.setSubject(studentDetails.getSubject());
+
         return studentRepository.save(student);
     }
 
+    // PERMANENT DELETE STUDENT
     public Student deleteStudent(Long id) {
+
         Student student = studentRepository.findById(id).orElse(null);
+
         if (student == null) {
             return null;
         }
+
         studentRepository.delete(student);
+
         return student;
+    }
+
+    // SOFT DELETE STUDENT
+    public boolean softDeleteStudent(Long id) {
+
+        Student student = studentRepository.findById(id).orElse(null);
+
+        if (student == null || student.getDelete()) {
+            return false;
+        }
+
+        student.setDelete(true);
+
+        studentRepository.save(student);
+
+        return true;
     }
 }
